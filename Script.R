@@ -1,5 +1,6 @@
 library(tidyverse)
 library(terra)
+library(maptiles)
 
 #create CN plot
 CN <- vect("tl_2023_us_aiannh.shp") ##keep ALL the files in the zip or it breaks!
@@ -15,8 +16,14 @@ Counties <- subset(Counties, Counties$COUNTY_NO %in% c("3", "7", "12",
 #plot counties cropped to CN borders
 SEOK <- crop(Counties, CN)
 
-
-library(maptiles)
+#download map
 bg <- get_tiles(ext(CN), crop = TRUE, zoom = 10)
-plotRGB(crop(bg, CN))
+
+#crop map to CN borders
+SEOKbg <- mask(bg, CN) #'crop' yields rectangles only, use 'mask' for irregular crops
+
+#plot cropped map
+plot(SEOKbg)
+
+#add border and county lines
 lines(SEOK, col="blue", lwd=3)
